@@ -1,170 +1,123 @@
 import random
 import time
 
-# -----------------------------
-# CSMA Protocol Simulation
-# -----------------------------
-
 class Station:
     def __init__(self, station_id):
-        self.id = station_id
+        self.station_id = station_id
         self.backoff = 0
+        self.success = 0
+        self.collision = 0
 
-class CSMASimulator:
+    def is_ready(self):
+        return self.backoff == 0
 
-    def __init__(self, num_stations, num_slots):
-        self.num_stations = num_stations
-        self.num_slots = num_slots
-        self.stations = [Station(i + 1) for i in range(num_stations)]
+    def reduce_backoff(self):
+        if self.backoff > 0:
+            self.backoff -= 1
 
-    # ---------------- CSMA/CD ----------------
-    def simulate_cd(self):
+    def set_backoff(self):
+        self.backoff = random.randint(1, 5)
 
-        print("\n==============================")
-        print("      CSMA/CD SIMULATION")
-        print("==============================")
 
-        for slot in range(1, self.num_slots + 1):
+class CSMASimulation:
 
-            print(f"\nTime Slot : {slot}")
+    def __init__(self, stations, slots):
+        self.stations = [Station(i + 1) for i in range(stations)]
+        self.slots = slots
 
-            transmitting = []
+    def simulate(self):
 
-            # Check which stations are ready
-            for station in self.stations:
+        print("\n========== CSMA SIMULATION ==========\n")
 
-                if station.backoff > 0:
-                    station.backoff -= 1
-                    continue
+        for slot in range(1, self.slots + 1):
 
-                if random.random() < 0.5:
-                    transmitting.append(station)
-
-            if len(transmitting) == 0:
-                print("Channel Status : Idle")
-
-            elif len(transmitting) == 1:
-                print(f"Station {transmitting[0].id} transmitted successfully.")
-
-            else:
-                print("Collision Detected!")
-
-                print("Stations Involved : ", end="")
-                for s in transmitting:
-                    print(s.id, end=" ")
-
-                print()
-
-                for s in transmitting:
-                    s.backoff = random.randint(1, 5)
-                    print(f"Station {s.id} waits {s.backoff} slots.")
-
-            print("\nCurrent Backoff Values")
-
-            for s in self.stations:
-                print(f"Station {s.id} : {s.backoff}")
-
-            time.sleep(1)
-
-        print("\nCSMA/CD Simulation Completed.")
-
-    # ---------------- CSMA/CA ----------------
-    def simulate_ca(self):
-
-        print("\n==============================")
-        print("      CSMA/CA SIMULATION")
-        print("==============================")
-
-        for slot in range(1, self.num_slots + 1):
-
-            print(f"\nTime Slot : {slot}")
+            print("=" * 40)
+            print("Time Slot :", slot)
 
             ready = []
 
+            # Check which stations want to transmit
             for station in self.stations:
 
                 if station.backoff > 0:
-                    station.backoff -= 1
+                    station.reduce_backoff()
                     continue
 
-                if random.random() < 0.5:
+                want_to_send = random.choice([True, False])
+
+                if want_to_send:
                     ready.append(station)
 
+            # Channel Status
             if len(ready) == 0:
 
-                print("Channel Idle")
+                print("Channel Status : Idle")
+                print("No station wants to transmit.")
 
             elif len(ready) == 1:
 
                 s = ready[0]
+                print("Channel Status : Busy")
+                print(f"Station {s.station_id} transmitted successfully.")
 
-                print(f"Station {s.id} senses idle channel.")
-                print("RTS Sent")
-                print("CTS Received")
-                print("DATA Transmitted")
-                print("ACK Received")
-
-                s.backoff = random.randint(1, 4)
+                s.success += 1
 
             else:
 
-                print("Multiple Stations Ready")
+                print("Collision Occurred!")
+
+                print("Stations involved : ", end="")
 
                 for s in ready:
-                    print("Station", s.id)
+                    print(s.station_id, end=" ")
 
-                winner = random.choice(ready)
-
-                print(f"\nStation {winner.id} wins the channel.")
-
-                print("RTS -> CTS -> DATA -> ACK")
-
-                winner.backoff = random.randint(1, 4)
+                print("\n")
 
                 for s in ready:
-                    if s != winner:
-                        s.backoff = random.randint(2, 6)
+                    s.collision += 1
+                    s.set_backoff()
+                    print(f"Station {s.station_id} backoff = {s.backoff}")
 
-            print("\nCurrent Backoff Values")
+            print("\nBackoff Status")
 
             for s in self.stations:
-                print(f"Station {s.id} : {s.backoff}")
+                print(f"Station {s.station_id} --> {s.backoff}")
 
             time.sleep(1)
 
-        print("\nCSMA/CA Simulation Completed.")
+        # Final Report
+        print("\n")
+        print("=" * 40)
+        print("FINAL REPORT")
+        print("=" * 40)
+
+        total_success = 0
+        total_collision = 0
+
+        for s in self.stations:
+
+            total_success += s.success
+            total_collision += s.collision
+
+            print(f"Station {s.station_id}")
+            print(f"Successful Transmissions : {s.success}")
+            print(f"Collisions              : {s.collision}")
+            print()
+
+        print("----------------------------------------")
+        print("Total Successful Transmissions :", total_success)
+        print("Total Collisions               :", total_collision)
+        print("Simulation Completed Successfully.")
 
 
-# ---------------- MAIN PROGRAM ----------------
+# Main Program
 
 print("===================================")
-print("      CSMA PROTOCOL SIMULATOR")
+print("      CSMA SIMULATION PROGRAM")
 print("===================================")
 
 stations = int(input("Enter Number of Stations : "))
 slots = int(input("Enter Number of Time Slots : "))
 
-simulator = CSMASimulator(stations, slots)
-
-while True:
-
-    print("\n========== MENU ==========")
-    print("1. Simulate CSMA/CD")
-    print("2. Simulate CSMA/CA")
-    print("3. Exit")
-
-    choice = input("Enter Your Choice : ")
-
-    if choice == "1":
-        simulator.simulate_cd()
-
-    elif choice == "2":
-        simulator.simulate_ca()
-
-    elif choice == "3":
-        print("\nThank You!")
-        print("Program Terminated Successfully.")
-        break
-
-    else:
-        print("Invalid Choice! Try Again.")
+simulation = CSMASimulation(stations, slots)
+simulation.simulate()
