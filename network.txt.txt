@@ -1,0 +1,81 @@
+#include <stdio.h>
+
+#define INF 99999
+
+struct Edge {
+    int source, destination, weight;
+};
+
+void bellmanFord(struct Edge edges[], int V, int E, int source) {
+    int distance[V];
+    int i, j;
+
+    // Step 1: Initialize distances
+    for (i = 0; i < V; i++)
+        distance[i] = INF;
+
+    distance[source] = 0;
+
+    // Step 2: Relax all edges V-1 times
+    for (i = 1; i <= V - 1; i++) {
+        for (j = 0; j < E; j++) {
+            int u = edges[j].source;
+            int v = edges[j].destination;
+            int w = edges[j].weight;
+
+            if (distance[u] != INF &&
+                distance[u] + w < distance[v]) {
+                distance[v] = distance[u] + w;
+            }
+        }
+    }
+
+    // Step 3: Check for negative-weight cycle
+    for (j = 0; j < E; j++) {
+        int u = edges[j].source;
+        int v = edges[j].destination;
+        int w = edges[j].weight;
+
+        if (distance[u] != INF &&
+            distance[u] + w < distance[v]) {
+            printf("Graph contains a negative-weight cycle.\n");
+            return;
+        }
+    }
+
+    // Display shortest distances
+    printf("\nVertex\tDistance from Source\n");
+
+    for (i = 0; i < V; i++) {
+        printf("%d\t%d\n", i, distance[i]);
+    }
+}
+
+int main() {
+    int V, E, i;
+    int source;
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &V);
+
+    printf("Enter number of edges: ");
+    scanf("%d", &E);
+
+    struct Edge edges[E];
+
+    printf("Enter source, destination and weight of each edge:\n");
+
+    for (i = 0; i < E; i++) {
+        scanf("%d %d %d",
+              &edges[i].source,
+              &edges[i].destination,
+              &edges[i].weight);
+    }
+
+    printf("Enter source vertex: ");
+    scanf("%d", &source);
+
+    bellmanFord(edges, V, E, source);
+
+    return 0;
+}
