@@ -1,3 +1,5 @@
+// Cyclic Redundancy Check (CRC) for Error Detection
+
 #include <iostream>
 #include <string>
 
