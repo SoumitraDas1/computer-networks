@@ -1,0 +1,66 @@
+import random
+import time
+
+def csma_simulation(num_stations, num_attempts):
+    successful = 0
+    collisions = 0
+    busy = 0
+
+    print("\n========== CSMA SIMULATION ==========")
+
+    for attempt in range(1, num_attempts + 1):
+        print(f"\nAttempt {attempt}")
+
+        # Each station decides whether it wants to transmit
+        transmitting_stations = []
+
+        for station in range(1, num_stations + 1):
+            if random.randint(0, 1) == 1:
+                transmitting_stations.append(station)
+
+        # Carrier sensing
+        if len(transmitting_stations) == 0:
+            print("Channel is IDLE")
+            print("No station is transmitting.")
+
+        elif len(transmitting_stations) == 1:
+            station = transmitting_stations[0]
+            print(f"Station {station} senses channel: IDLE")
+            print(f"Station {station} starts transmitting.")
+            print("Transmission successful!")
+            successful += 1
+
+        else:
+            print("Multiple stations sense channel: IDLE")
+            print("Stations attempting transmission:",
+                  transmitting_stations)
+            print("COLLISION occurred!")
+            collisions += 1
+
+            # Random backoff
+            backoff = random.randint(1, 5)
+            print(f"Stations wait for {backoff} time units.")
+
+        time.sleep(0.2)
+
+    # Results
+    print("\n========== RESULTS ==========")
+    print("Total attempts:", num_attempts)
+    print("Successful transmissions:", successful)
+    print("Collisions:", collisions)
+    print("Idle attempts:", num_attempts - successful - collisions)
+
+    throughput = successful / num_attempts
+    print("Throughput:", round(throughput, 3))
+
+
+# Main program
+print("CSMA PROTOCOL SIMULATION")
+
+stations = int(input("Enter number of stations: "))
+attempts = int(input("Enter number of transmission attempts: "))
+
+if stations <= 0 or attempts <= 0:
+    print("Please enter positive values.")
+else:
+    csma_simulation(stations, attempts)
