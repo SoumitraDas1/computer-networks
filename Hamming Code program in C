@@ -1,0 +1,43 @@
+#include <stdio.h>
+
+int main()
+{
+    int h[8], e;
+
+    printf("Enter 4 data bits: ");
+    scanf("%d%d%d%d", &h[3], &h[5], &h[6], &h[7]);
+
+    h[1] = h[3] ^ h[5] ^ h[7];
+    h[2] = h[3] ^ h[6] ^ h[7];
+    h[4] = h[5] ^ h[6] ^ h[7];
+
+    printf("Hamming code: ");
+    for(int i = 1; i <= 7; i++)
+        printf("%d", h[i]);
+
+    printf("\nEnter error position (0 for no error): ");
+    scanf("%d", &e);
+
+    if(e >= 1 && e <= 7)
+        h[e] ^= 1;
+    int p1 = h[1]^h[3]^h[5]^h[7];
+    int p2 = h[2]^h[3]^h[6]^h[7];
+    int p4 = h[4]^h[5]^h[6]^h[7];
+
+    int error = p1 + 2*p2 + 4*p4;
+
+    if(error == 0)
+        printf("No error\n");
+    else {
+        printf("Error at position %d\n", error);
+        h[error] ^= 1;
+    }
+
+    printf("Corrected code: ");
+    for(int i = 1; i <= 7; i++)
+        printf("%d", h[i]);
+
+    printf("\nData: %d%d%d%d\n", h[3], h[5], h[6], h[7]);
+
+    return 0;
+}

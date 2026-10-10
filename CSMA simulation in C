@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int main()
+{
+    int n, i;
+    int channel = 0;   // 0 = idle, 1 = busy
+    int attempts;
+
+    srand(time(NULL));
+
+    printf("Enter number of stations: ");
+    scanf("%d", &n);
+
+    for (i = 1; i <= n; i++)
+    {
+        printf("\nStation %d wants to transmit.\n", i);
+
+        attempts = 0;
+
+        while (1)
+        {
+            attempts++;
+            if (channel == 0)
+            {
+                printf("Station %d senses channel: IDLE\n", i);
+
+                if (rand() % 4 == 0)
+                {
+                    printf("Station %d: Collision occurred!\n", i);
+                    channel = 0;
+
+                    if (attempts >= 5)
+                    {
+                        printf("Station %d: Transmission failed after %d attempts.\n",
+                               i, attempts);
+                        break;
+                    }
+
+                    printf("Station %d: Waiting before retry...\n", i);
+                }
+                else
+                {
+                    channel = 1;
+                    printf("Station %d: Transmitting...\n", i);
+
+                    printf("Station %d: Transmission successful.\n", i);
+
+                    channel = 0;
+                    break;
+                }
+            }
+            else
+            {
+                printf("Station %d senses channel: BUSY\n", i);
+                printf("Station %d: Waiting...\n", i);
+
+                channel = 0;
+            }
+        }
+    }
+
+    printf("\nCSMA simulation completed.\n");
+
+    return 0;
+}

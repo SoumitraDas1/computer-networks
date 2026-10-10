@@ -1,0 +1,119 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define MAX_STATIONS 10
+#define MAX_FRAMES 100
+
+void pureAloha(int stations, int frames)
+{
+    int i, j;
+    int success = 0, collision = 0;
+    int attempts;
+
+    printf("\n========== PURE ALOHA ==========\n");
+
+    for (i = 1; i <= frames; i++)
+    {
+        attempts = 0;
+
+        for (j = 0; j < stations; j++)
+        {
+            if (rand() % 2 == 0)
+                attempts++;
+        }
+
+        printf("Frame %d: ", i);
+
+        if (attempts == 0)
+        {
+            printf("No transmission\n");
+        }
+        else if (attempts == 1)
+        {
+            printf("Successful transmission\n");
+            success++;
+        }
+        else
+        {
+            printf("Collision (%d stations transmitted)\n", attempts);
+            collision++;
+        }
+    }
+
+    printf("\nPure ALOHA Results:\n");
+    printf("Successful transmissions = %d\n", success);
+    printf("Collisions               = %d\n", collision);
+    printf("Throughput               = %.2f\n",
+           (float)success / frames);
+}
+
+void slottedAloha(int stations, int slots)
+{
+    int i, j;
+    int success = 0, collision = 0;
+    int attempts;
+
+    printf("\n========== SLOTTED ALOHA ==========\n");
+
+    for (i = 1; i <= slots; i++)
+    {
+        attempts = 0;
+
+        for (j = 0; j < stations; j++)
+        {
+            if (rand() % 2 == 0)
+                attempts++;
+        }
+
+        printf("Slot %d: ", i);
+
+        if (attempts == 0)
+        {
+            printf("No transmission\n");
+        }
+        else if (attempts == 1)
+        {
+            printf("Successful transmission\n");
+            success++;
+        }
+        else
+        {
+            printf("Collision (%d stations transmitted)\n", attempts);
+            collision++;
+        }
+    }
+
+    printf("\nSlotted ALOHA Results:\n");
+    printf("Successful transmissions = %d\n", success);
+    printf("Collisions               = %d\n", collision);
+    printf("Throughput               = %.2f\n",
+           (float)success / slots);
+}
+
+int main()
+{
+    int stations, frames, slots;
+
+    srand(time(NULL));
+
+    printf("Enter number of stations: ");
+    scanf("%d", &stations);
+
+    printf("Enter number of frames/slots: ");
+    scanf("%d", &frames);
+
+    if (stations < 1 || stations > MAX_STATIONS ||
+        frames < 1 || frames > MAX_FRAMES)
+    {
+        printf("Invalid input.\n");
+        return 1;
+    }
+
+    pureAloha(stations, frames);
+
+    slots = frames;
+    slottedAloha(stations, slots);
+
+    return 0;
+}
