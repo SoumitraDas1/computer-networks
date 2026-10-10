@@ -1,69 +1,38 @@
 #include <stdio.h>
 #include <string.h>
 
-#define MAX_DATA 100
-#define MAX_DIVISOR 20
-
-int main(void)
+int main()
 {
-    char data[MAX_DATA];
-    char divisor[MAX_DIVISOR];
-    char temp[MAX_DATA];
-    char codeword[MAX_DATA];
-    char remainder[MAX_DIVISOR];
-    char quotient[MAX_DATA];
-
-    int dataLen, divisorLen;
-    int i, j;
+    char data[100], div[20], temp[120];
+    int n, m, i, j;
 
     printf("Enter Data: ");
-    scanf("%99s", data);
+    scanf("%s", data);
 
     printf("Enter Divisor: ");
-    scanf("%19s", divisor);
+    scanf("%s", div);
 
-    dataLen = strlen(data);
-    divisorLen = strlen(divisor);
+    n = strlen(data);
+    m = strlen(div);
 
-    /* Copy data to temporary array */
     strcpy(temp, data);
-
-    /* Append zeros */
-    for (i = 0; i < divisorLen - 1; i++)
+    for (i = 0; i < m - 1; i++)
+        temp[n + i] = '0';
+    temp[n + m - 1] = '\0';
+    for (i = 0; i < n; i++)
     {
-        temp[dataLen + i] = '0';
-    }
-    temp[dataLen + divisorLen - 1] = '\0';
-
-    /* Perform CRC Division */
-    for (i = 0; i < dataLen; i++)
-    {
-        quotient[i] = temp[i];
-
         if (temp[i] == '1')
-        {
-            for (j = 0; j < divisorLen; j++)
-            {
-                temp[i + j] = (temp[i + j] == divisor[j]) ? '0' : '1';
-            }
-        }
+            for (j = 0; j < m; j++)
+                temp[i + j] ^= div[j] ^ '0';
     }
-    quotient[dataLen] = '\0';
 
-    /* Extract remainder */
-    for (i = 0; i < divisorLen - 1; i++)
-    {
-        remainder[i] = temp[dataLen + i];
-    }
-    remainder[divisorLen - 1] = '\0';
+    printf("\nCRC: ");
+    for (i = n; i < n + m - 1; i++)
+        printf("%c", temp[i]);
 
-    /* Create codeword */
-    strcpy(codeword, data);
-    strcat(codeword, remainder);
-
-    printf("\nQuotient : %s\n", quotient);
-    printf("CRC      : %s\n", remainder);
-    printf("Codeword : %s\n", codeword);
+    printf("\nCodeword: %s", data);
+    for (i = n; i < n + m - 1; i++)
+        printf("%c", temp[i]);
 
     return 0;
 }
