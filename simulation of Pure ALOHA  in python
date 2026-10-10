@@ -1,0 +1,92 @@
+import random
+import math
+
+def pure_aloha(num_stations, num_frames):
+    successful = 0
+    collisions = 0
+
+    print("\n========== PURE ALOHA ==========")
+
+    for frame in range(1, num_frames + 1):
+        attempts = 0
+
+        # Each station has 50% probability of transmitting
+        for _ in range(num_stations):
+            if random.randint(0, 1) == 1:
+                attempts += 1
+
+        print(f"Frame {frame}: ", end="")
+
+        if attempts == 0:
+            print("No transmission")
+
+        elif attempts == 1:
+            print("Successful transmission")
+            successful += 1
+
+        else:
+            print(f"Collision ({attempts} stations transmitted)")
+            collisions += 1
+
+    throughput = successful / num_frames
+
+    print("\nPure ALOHA Results")
+    print("------------------")
+    print("Successful transmissions:", successful)
+    print("Collisions:", collisions)
+    print("Throughput:", round(throughput, 3))
+
+
+def slotted_aloha(num_stations, num_slots):
+    successful = 0
+    collisions = 0
+
+    print("\n========== SLOTTED ALOHA ==========")
+
+    for slot in range(1, num_slots + 1):
+        attempts = 0
+
+        # Each station has 50% probability of transmitting
+        for _ in range(num_stations):
+            if random.randint(0, 1) == 1:
+                attempts += 1
+
+        print(f"Slot {slot}: ", end="")
+
+        if attempts == 0:
+            print("No transmission")
+
+        elif attempts == 1:
+            print("Successful transmission")
+            successful += 1
+
+        else:
+            print(f"Collision ({attempts} stations transmitted)")
+            collisions += 1
+
+    throughput = successful / num_slots
+
+    print("\nSlotted ALOHA Results")
+    print("---------------------")
+    print("Successful transmissions:", successful)
+    print("Collisions:", collisions)
+    print("Throughput:", round(throughput, 3))
+
+
+# Main program
+print("ALOHA PROTOCOL SIMULATION")
+
+stations = int(input("Enter number of stations: "))
+frames = int(input("Enter number of frames/slots: "))
+
+# Run Pure ALOHA
+pure_aloha(stations, frames)
+
+# Run Slotted ALOHA
+slotted_aloha(stations, frames)
+
+# Theoretical maximum throughput
+print("\n========== THEORETICAL VALUES ==========")
+print("Pure ALOHA     :", round(1 / (2 * math.e), 3))
+print("Slotted ALOHA  :", round(1 / math.e, 3))
+
